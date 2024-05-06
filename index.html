@@ -1,20 +1,97 @@
-<!-- index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LLM Inference Web Demo</title>
+    <title>Financial Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        #tickerForm {
+            margin-bottom: 20px;
+        }
+        #tickerForm input[type="text"], #tickerForm button {
+            padding: 10px;
+            margin-right: 10px;
+        }
+        #progress {
+            margin-bottom: 20px;
+        }
+        #result {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        #chart {
+            margin-bottom: 20px;
+        }
+        #chart img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
 </head>
 <body>
-    Input:<br />
+    <div class="container">
+        <h1>Financial Analysis</h1>
+        <p>Enter a company ticker and click Submit to start the analysis.</p>
+        <form id="tickerForm">
+            <label for="ticker">Enter Company Ticker:</label>
+            <input type="text" id="ticker" name="ticker">
+            <button type="submit">Submit</button>
+        </form>
+        <div id="progress"></div>
+        <div id="result"></div>
+        <div id="chart"></div>
+    </div>
 
-    <textarea id="input" style="height: 300px; width: 600px"></textarea><br />
-    <input type="button" id="submit" value="Get Response" disabled /><br />
-    <br />
-    Result:<br />
-    <textarea id="output" style="height: 300px; width: 600px"></textarea>
-    <script src="index.js" type="module"></script>
+    <script>
+        const form = document.getElementById('tickerForm');
+        const progressDiv = document.getElementById('progress');
+        const resultDiv = document.getElementById('result');
+        const chartDiv = document.getElementById('chart');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const ticker = document.getElementById('ticker').value;
+            progressDiv.innerHTML = 'Downloading...this may take a few minutes';
+            resultDiv.innerHTML = ''; // Clear previous result
+            
+            // Clear previous chart
+            while (chartDiv.firstChild) {
+                chartDiv.removeChild(chartDiv.firstChild);
+            }
+
+            const response = await fetch('/process_ticker', {
+                method: 'POST',
+                body: new URLSearchParams({ ticker }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+                }
+            });
+
+            const data = await response.json();
+            progressDiv.innerHTML = data.progress_messages.join('<br>');
+            resultDiv.innerHTML = 'Performing sentiment analysis on the most recent 10-K filing...';
+
+            // Check if the response contains plot image
+            if (data.plot_image) {
+                const chartImg = document.createElement('img');
+                chartImg.src = 'data:image/png;base64,' + data.plot_image;
+                chartDiv.appendChild(chartImg);
+            }
+        });
+    </script>
 </body>
 </html>

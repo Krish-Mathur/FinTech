@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 import re
 from transformers import BertTokenizer
 import time
+import matplotlib.pyplot as plt  # Import Matplotlib for visualization
 
 # Initialize the tokenizer
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
@@ -18,11 +19,11 @@ def download_10k_filings(ticker, save_directory):
     for year in range(1995, 2024):
         try:
             dl.get("10-K", ticker, after=f"{year}-01-01", before=f"{year+1}-01-01", download_details=False)
-            print(f"Downloaded 10-K filing for {ticker} in {year}")
+            yield f"Downloaded 10-K filing for {ticker} in {year}"
         except Exception as e:
-            print(f"Failed to download 10-K filing for {ticker} in {year}: {e}")
+            yield f"Failed to download 10-K filing for {ticker} in {year}: {e}"
 
-def extract_financial_results(html_content):
+def extract_financial_results(html_content, save_directory):
     try:
         # Parse HTML content
         soup = BeautifulSoup(html_content, 'html.parser')
@@ -40,13 +41,13 @@ def extract_financial_results(html_content):
         plain_text = re.sub(r'<[^>]+>', '', plain_text)
         
         # Extract sentences containing "net sales"
-        sentences = [sentence.strip() for sentence in plain_text.split('.') if "net sales" in sentence.lower()]
+        sentences = [sentence.strip() for sentence in plain_text.split('.') if "profit" in sentence.lower()]
         
         # Join filtered sentences into a single string
         filtered_text = ' '.join(sentences)
         
-        # Remove non-alphanumeric characters
-        filtered_text = re.sub(r'[^a-zA-Z0-9\s]', '', filtered_text)
+        # Keep periods and percent symbols
+        filtered_text = re.sub(r'[^a-zA-Z0-9\s.%$]', '', filtered_text)
         
         # Remove extra whitespace
         filtered_text = ' '.join(filtered_text.split())
@@ -57,13 +58,12 @@ def extract_financial_results(html_content):
         # Save filtered text to the TXT file
         with open(filename, 'w', encoding='utf-8') as file:
             file.write(filtered_text)
-        #print(filtered_text)
+        
         return filtered_text
     
     except Exception as e:
         print(f"Error extracting financial results: {e}")
         return None
-
 
 
 def perform_sentiment_analysis(text):
@@ -100,57 +100,31 @@ def perform_sentiment_analysis(text):
     
     return {"error": "Failed to perform sentiment analysis"}
 
-
-
-
-# def perform_sentiment_analysis(text, window_size =512, step_size = 256):
-#     headers = {"Authorization": f"Bearer {API_TOKEN}"}
-#     sentiment_scores = {"neutral": [], "negative": [], "positive": []}
-
-#     # Split the text into chunks of maximum length window_size
-#     chunks = [text[i:i+window_size] for i in range(0, len(text), window_size)]
-
-#     for chunk in chunks:
-#         num_tokens = len(chunk.split())
-#         for i in range(0, num_tokens, step_size):
-#             window_chunk = " ".join(chunk.split()[i:i+window_size])
-#             payload = {"inputs": window_chunk, "wait_for_model": True}
-#             response = requests.post(API_URL, headers=headers, json=payload)
-#             if response.status_code == 200:
-#                 result = response.json()[0][0]
-#                 sentiment_scores["neutral"].append(result["score"])
-#                 sentiment_scores["negative"].append(result["score"])
-#                 sentiment_scores["positive"].append(result["score"])
-#             else:
-#                 print(f"Error querying FinBERT model: {response.status_code}")
-#                 print(response.json())
-#                 return None
-
-    # Compute the average sentiment score for each label
-    # averages = {label: sum(scores) / len(scores) for label, scores in sentiment_scores.items()}
-    # return averages
-
-
 def analyze_most_recent_10k_filing(ticker, save_directory):
     source_directory = os.path.join(save_directory, "sec-edgar-filings", ticker, "10-K")
     latest_filing = None
-    for root, _, files in os.walk(source_directory):
-        for file in files:
-            if file.endswith('.txt'):
-                source_file = os.path.join(root, file)
-                with open(source_file, 'r', encoding='utf-8') as f:
-                    html_content = f.read()
-                latest_filing = html_content
+    latest_time = 0
+    
+    for root, dirs, _ in os.walk(source_directory):
+        for directory in dirs:
+            if "-23-" in directory:  # Check if the year "-23-" is in the directory name
+                filing_path = os.path.join(root, directory, "full-submission.txt")
+                file_time = os.path.getctime(filing_path)
+                if file_time > latest_time:
+                    latest_time = file_time
+                    latest_filing = filing_path
     
     if latest_filing:
         print("Latest 10-K filing content:")
-        financial_results = extract_financial_results(latest_filing)
+        with open(latest_filing, 'r', encoding='utf-8') as f:
+            html_content = f.read()
+        financial_results = extract_financial_results(html_content, save_directory)  # Pass save_directory here
         if financial_results:
             print("Performing sentiment analysis on the most recent 10-K filing...")
             time.sleep(5)
             sentiment_analysis_result = perform_sentiment_analysis(financial_results)
             if sentiment_analysis_result:
-                print(sentiment_analysis_result)
+                return sentiment_analysis_result
             else:
                 print("Sentiment analysis failed.")
         else:
@@ -159,9 +133,11 @@ def analyze_most_recent_10k_filing(ticker, save_directory):
         print("No 10-K filing found for sentiment analysis.")
 
 # Example usage
-ticker = input("Enter the company ticker: ")
-script_directory = os.getcwd()  # Get the current working directory
-save_directory = os.path.join(script_directory, ticker)  # Create a directory path to save the filings
-os.makedirs(save_directory, exist_ok=True)  # Create the directory if it doesn't exist
-download_10k_filings(ticker, save_directory)
-analyze_most_recent_10k_filing(ticker, save_directory)
+
+if __name__ == "__main__":
+    ticker = input("Enter the company ticker: ")
+    script_directory = os.getcwd()  # Get the current working directory
+    save_directory = os.path.join(script_directory, ticker)  # Create a directory path to save the filings
+    os.makedirs(save_directory, exist_ok=True)  # Create the directory if it doesn't exist
+    download_10k_filings(ticker, save_directory)
+    analyze_most_recent_10k_filing(ticker, save_directory)
