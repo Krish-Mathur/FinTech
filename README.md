@@ -26,7 +26,7 @@ To run the application locally, follow these steps:
 2. Clone this repository to your local machine.
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/Krish-Mathur/FinTech.git
    ```
 3. navigate to the project directory
    ```bash
