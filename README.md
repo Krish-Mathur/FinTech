@@ -4,6 +4,7 @@ This project provides a web application for conducting financial analysis on com
 Note: The insights gained dealt with analyzing the sentiment around company profits, as these features would tell me more about the financial health and performance of a company.
 With more time/compute power, I would love to implement this utilizing a sliding window approach to tokenization, as Hugging Face's API could only allow for 512 tokens per API call and I was hitting the limit very quickly. 
 
+- **DEMO**: https://youtu.be/qG9Rq3Hi-1c
 ## Tech Stack
 
 The project utilizes the following technologies:
