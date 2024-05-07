@@ -10,11 +10,12 @@ The project utilizes the following technologies:
   
 - **Flask**: Flask is a lightweight web framework for Python. It's chosen for its simplicity and ease of use in building web applications.
 
+- **Hugging Face Transformers**: I utilized finBERT (Bidirectional Encoder Representations from Transformers) from Hugging Face, to perform sentiment analysis. I chose it as it is trained on a large corpus of financial documents and reports.
+
 - **matplotlib**: Matplotlib is a plotting library for Python. It's used to generate bar charts displaying sentiment analysis results.
 
 - **HTML/CSS/JavaScript**: The frontend of the application is built using HTML, CSS, and JavaScript. HTML for structuring the content, CSS for styling, and JavaScript for dynamic behavior such as handling form submissions and displaying progress messages.
 
-- **Hugging Face Transformers**: Hugging Face Transformers is used for sentiment analysis. It provides pre-trained models for natural language processing tasks, allowing us to perform sentiment analysis on financial texts.
 
 ## How to Run
 
@@ -26,3 +27,17 @@ To run the application locally, follow these steps:
 
    ```bash
    git clone <repository-url>
+   ```
+3. navigate to the project directory
+   ```bash
+   cd FinTech
+   ```
+4. Install the required Python packages using pip.
+   ```bash
+   pip install -r requirements.txt
+   ```
+5. Run the Flask application.
+   ```bash
+   python app.py
+   ```
+6. Navigate to http://localhost:5000 to access the application.
