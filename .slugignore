@@ -1,0 +1,35 @@
+# Ignore files and directories that are not needed in the deployment slug
+
+# Python-related files
+*.pyc
+__pycache__
+
+# Version control files
+.git
+.gitignore
+
+# IDE/editor files
+.vscode
+.idea
+
+# Dependency management files
+pip-debug.log
+pip-log.txt
+poetry.lock
+
+# Test files
+tests/
+*.test
+
+# Documentation files
+docs/
+
+# Other temporary or development files
+*.bak
+*.swp
+*.tmp
+*.log
+.DS_Store
+
+# Web application entry point
+index.html
