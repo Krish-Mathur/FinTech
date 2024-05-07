@@ -4,7 +4,6 @@ from downloader import download_10k_filings, analyze_most_recent_10k_filing, per
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import io
 import base64
 import uuid
 

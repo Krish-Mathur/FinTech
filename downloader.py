@@ -5,8 +5,6 @@ from bs4 import BeautifulSoup
 import re
 from transformers import BertTokenizer
 import time
-import matplotlib.pyplot as plt  # Import Matplotlib for visualization
-
 # Initialize the tokenizer
 tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
 
