@@ -25,38 +25,19 @@ def extract_financial_results(html_content, save_directory):
     try:
         # Parse HTML content
         soup = BeautifulSoup(html_content, 'html.parser')
-        
-        # Find all text elements
         text_elements = soup.find_all(text=True)
-        
-        # Filter out non-textual elements (e.g., scripts, styles)
         text_content = [elem.strip() for elem in text_elements if elem.parent.name not in ['script', 'style']]
-        
-        # Join text content into a single string
         plain_text = ' '.join(text_content)
-        
         # Remove any remaining HTML tags
         plain_text = re.sub(r'<[^>]+>', '', plain_text)
-        
-        # Extract sentences containing "net sales"
+        # Extract sentences containing "profit"
         sentences = [sentence.strip() for sentence in plain_text.split('.') if "profit" in sentence.lower()]
-        
-        # Join filtered sentences into a single string
         filtered_text = ' '.join(sentences)
-        
-        # Keep periods and percent symbols
         filtered_text = re.sub(r'[^a-zA-Z0-9\s.%$]', '', filtered_text)
-        
-        # Remove extra whitespace
         filtered_text = ' '.join(filtered_text.split())
-        
-        # Construct the filename
         filename = os.path.join(save_directory, "extracted_text.txt")
-        
-        # Save filtered text to the TXT file
         with open(filename, 'w', encoding='utf-8') as file:
             file.write(filtered_text)
-        
         return filtered_text
     
     except Exception as e:
