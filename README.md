@@ -1,6 +1,8 @@
 # Financial Analysis App
 
 This project provides a web application for conducting financial analysis on companies. Users can enter a company ticker symbol, and the application will download relevant financial 10K filings, perform sentiment analysis (using finBERT), and display the results in a bar chart (matplotlib).
+Note: The insights gained dealt with analyzing the sentiment around company profits, as these features would tell me more about the financial health and performance of a company.
+With more time/compute power, I would love to implement this utilizing a sliding window approach to tokenization, as Hugging Face's API could only allow for 512 tokens per API call and I was hitting the limit very quickly. 
 
 ## Tech Stack
 
