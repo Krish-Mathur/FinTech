@@ -1,6 +1,6 @@
 # Financial Analysis App
 
-This project provides a web application for conducting financial analysis on companies. Users can enter a company ticker symbol, and the application will download relevant financial filings, perform sentiment analysis, and display the results in a bar chart.
+This project provides a web application for conducting financial analysis on companies. Users can enter a company ticker symbol, and the application will download relevant financial 10K filings, perform sentiment analysis (using finBERT), and display the results in a bar chart (matplotlib).
 
 ## Tech Stack
 
