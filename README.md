@@ -6,7 +6,7 @@ This project provides a web application for conducting financial analysis on com
 
 The project utilizes the following technologies:
 
-- **Python**: The backend server is implemented in Python using the Flask framework. Python is chosen for its simplicity, flexibility, and rich ecosystem of libraries for data processing and web development.
+- **Python**: The backend server is implemented in Python using the Flask framework. Python is chosen for its simplicity and flexibility.
   
 - **Flask**: Flask is a lightweight web framework for Python. It's chosen for its simplicity and ease of use in building web applications.
 
